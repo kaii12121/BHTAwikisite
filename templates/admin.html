@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>BHTAwiki - Admin</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div class="header-inner">
+
+        <a
+            href="/"
+            class="logo"
+        >
+            BHTAwiki
+        </a>
+
+
+        <nav>
+
+            <a href="/">
+                Ranking
+            </a>
+
+            <a href="/quests">
+                Quests
+            </a>
+
+            <a href="/rules">
+                Rules
+            </a>
+
+            <a href="/admin">
+                Admin
+            </a>
+
+            <a href="/logout">
+                Logout
+            </a>
+
+        </nav>
+
+    </div>
+
+</header>
+
+
+
+<main>
+
+
+<section class="admin-page">
+
+
+    <div class="admin-title">
+
+        <p>
+            BHTAwiki
+        </p>
+
+        <h1>
+            ADMIN PANEL
+        </h1>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         ADD RECORD
+    ================================================== -->
+
+    <section class="admin-card">
+
+        <h2>
+            TA記録を登録
+        </h2>
+
+
+        <form
+            method="POST"
+            action="/admin"
+            class="admin-form"
+        >
+
+
+            <label>
+
+                プレイヤー名
+
+                <input
+                    type="text"
+                    name="player"
+                    required
+                >
+
+            </label>
+
+
+            <label>
+
+                クエスト
+
+                <select
+                    name="quest"
+                    required
+                >
+
+                    <option value="">
+                        クエストを選択
+                    </option>
+
+
+                    {% for quest in quests %}
+
+                    <option value="{{ quest['name'] }}">
+
+                        {{ quest['name'] }}
+
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </label>
+
+
+            <label>
+
+                武器
+
+                <select
+                    name="weapon"
+                    required
+                >
+
+                    <option value="">
+                        武器を選択
+                    </option>
+
+
+                    {% for weapon in weapons %}
+
+                    <option value="{{ weapon['name'] }}">
+
+                        {{ weapon['name'] }}
+
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </label>
+
+
+            <label>
+
+                タイム
+
+                <input
+                    type="text"
+                    name="time"
+                    placeholder="例：05:32.45"
+                    required
+                >
+
+            </label>
+
+
+            <label>
+
+                プラットフォーム
+
+                <select
+                    name="platform"
+                    required
+                >
+
+                    <option value="">
+                        プラットフォームを選択
+                    </option>
+
+
+                    {% for platform in platforms %}
+
+                    <option value="{{ platform['name'] }}">
+
+                        {{ platform['name'] }}
+
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </label>
+
+
+            <label>
+
+                YouTube URL
+                <span class="optional">
+                    （任意）
+                </span>
+
+                <input
+                    type="url"
+                    name="video_url"
+                    placeholder="https://www.youtube.com/..."
+                >
+
+            </label>
+
+
+            <button
+                type="submit"
+                class="admin-submit"
+            >
+
+                TA記録を登録
+
+            </button>
+
+
+        </form>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         QUEST MANAGEMENT
+    ================================================== -->
+
+    <section class="admin-card">
+
+        <h2>
+            クエスト管理
+        </h2>
+
+
+        <form
+            method="POST"
+            action="/admin/quest/add"
+            class="inline-form"
+        >
+
+            <input
+                type="text"
+                name="quest_name"
+                placeholder="新しいクエスト名"
+                required
+            >
+
+
+            <button type="submit">
+
+                ＋ クエスト追加
+
+            </button>
+
+        </form>
+
+
+
+        <div class="admin-list">
+
+
+            {% for quest in quests %}
+
+
+            <div class="admin-list-row">
+
+
+                <span>
+
+                    {{ quest['name'] }}
+
+                </span>
+
+
+                <form
+                    method="POST"
+                    action="/admin/quest/delete/{{ quest['id'] }}"
+                    onsubmit="return confirm(
+                        'このクエストを削除しますか？\n\nこのクエストに登録されているTA記録もすべて削除されます。'
+                    );"
+                >
+
+                    <button
+                        type="submit"
+                        class="delete-button"
+                    >
+
+                        削除
+
+                    </button>
+
+                </form>
+
+
+            </div>
+
+
+            {% else %}
+
+
+            <div class="admin-empty">
+
+                クエストがありません。
+
+            </div>
+
+
+            {% endfor %}
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         WEAPON MANAGEMENT
+    ================================================== -->
+
+    <section class="admin-card">
+
+        <h2>
+            武器管理
+        </h2>
+
+
+        <form
+            method="POST"
+            action="/admin/weapon/add"
+            class="inline-form"
+        >
+
+            <input
+                type="text"
+                name="weapon_name"
+                placeholder="新しい武器名"
+                required
+            >
+
+
+            <button type="submit">
+
+                ＋ 武器追加
+
+            </button>
+
+        </form>
+
+
+    </section>
+
+
+
+    <!-- ==================================================
+         PLATFORM MANAGEMENT
+    ================================================== -->
+
+    <section class="admin-card">
+
+        <h2>
+            プラットフォーム管理
+        </h2>
+
+
+        <form
+            method="POST"
+            action="/admin/platform/add"
+            class="inline-form"
+        >
+
+            <input
+                type="text"
+                name="platform_name"
+                placeholder="新しいプラットフォーム名"
+                required
+            >
+
+
+            <button type="submit">
+
+                ＋ プラットフォーム追加
+
+            </button>
+
+        </form>
+
+
+    </section>
+
+
+
+    <!-- ==================================================
+         RECORD LIST
+    ================================================== -->
+
+    <section class="admin-card">
+
+        <h2>
+            登録済みTA記録
+        </h2>
+
+
+        <div class="admin-records">
+
+
+            {% for record in records %}
+
+
+            <div class="admin-record-row">
+
+
+                <div>
+
+                    <strong>
+                        {{ record['player'] }}
+                    </strong>
+
+                    <span>
+                        {{ record['quest'] }}
+                    </span>
+
+                    <span>
+                        {{ record['weapon'] }}
+                    </span>
+
+                    <strong class="admin-time">
+
+                        {{ '%02d:%05.2f'|format(
+                            record['time'] // 60,
+                            record['time'] % 60
+                        ) }}
+
+                    </strong>
+
+
+                    {% if record['video_url'] %}
+
+                    <span class="youtube-status">
+                        ▶ YouTubeあり
+                    </span>
+
+                    {% else %}
+
+                    <span class="youtube-status no-video">
+                        YouTubeなし
+                    </span>
+
+                    {% endif %}
+
+
+                </div>
+
+
+                <div class="admin-record-actions">
+
+                    <a
+                        href="/admin/edit/{{ record['id'] }}"
+                    >
+                        編集
+                    </a>
+
+
+                    <a
+                        href="/admin/delete/{{ record['id'] }}"
+                        class="delete-link"
+                        onclick="return confirm(
+                            'このTA記録を削除しますか？'
+                        );"
+                    >
+                        削除
+                    </a>
+
+                </div>
+
+
+            </div>
+
+
+            {% else %}
+
+
+            <div class="admin-empty">
+
+                登録されているTA記録はありません。
+
+            </div>
+
+
+            {% endfor %}
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         BACKUP
+    ================================================== -->
+
+    <section class="admin-card">
+
+        <h2>
+            データベース
+        </h2>
+
+
+        <a
+            href="/admin/backup"
+            class="backup-button"
+        >
+
+            データベースをバックアップ
+
+        </a>
+
+    </section>
+
+
+</section>
+
+
+</main>
+
+
+</body>
+
+</html>
